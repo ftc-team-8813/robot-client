@@ -2,6 +2,9 @@ import client
 import atexit
 import time
 
+import numpy as np
+import cv2
+
 IP_ADDR = '192.168.43.1' # Control Hub address (usually fixed to this)
 PORT = 23456 # Port number, set by the server
 
@@ -20,16 +23,22 @@ def main():
     result = conn.send_recv(0x02, sn)
     if result is None: return
     print(result)
-    if result.startswith(b'!'): return
+    # if result.startswith(b'!'): return
     frame = b''
-    for i in range(10):
+    while True:
         while len(frame) == 0:
             frame = conn.send_recv(0x03, b'')
             if frame is None: return
-            time.sleep(0.5)
+            time.sleep(0.01)
         print("Got frame")
-    with open('frame.jpg', 'wb') as of:
-        of.write(frame)
+        frame_data = np.frombuffer(frame, dtype='uint8')
+        img = cv2.imdecode(frame_data, cv2.IMREAD_COLOR)
+        cv2.imshow('Stream test', img)
+        cv2.waitKey(5)
+        frame = b''
+
+    # with open('frame.jpg', 'wb') as of:
+    #     of.write(frame)
 
 
 if __name__ == '__main__':
