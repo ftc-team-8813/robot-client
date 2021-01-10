@@ -9,14 +9,28 @@ def main():
     conn = client.Connection(IP_ADDR, PORT)
     conn.connect()
     atexit.register(conn.close)
-    while True:
-        start = time.perf_counter()
-        resp = conn.send_recv(0x00, b'Hello World!') # echo
-        if resp is None:
-            break
-        elapsed = time.perf_counter() - start
-        print("[%.3f] %s" % (elapsed, resp))
-        time.sleep(1)
+    resp = conn.send_recv(0x00, b'testing')
+    if resp is None: return
+    print(resp)
+    cams = conn.send_recv(0x01, b'')
+    if cams is None: return
+    print(cams)
+    sn = cams.split(b',')[0]
+    print("Opening camera %s" % sn)
+    result = conn.send_recv(0x02, sn)
+    if result is None: return
+    print(result)
+    if result.startswith(b'!'): return
+    frame = b''
+    for i in range(10):
+        while len(frame) == 0:
+            frame = conn.send_recv(0x03, b'')
+            if frame is None: return
+            time.sleep(0.5)
+        print("Got frame")
+    with open('frame.jpg', 'wb') as of:
+        of.write(frame)
+
 
 if __name__ == '__main__':
     main()

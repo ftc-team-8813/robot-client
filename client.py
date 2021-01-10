@@ -90,5 +90,6 @@ class Connection:
             return rdata
 
     def close(self):
-        self.send_recv(0xFF)
-        self.sock.close()
+        if self.connected:
+            self.send_recv(0xFF)
+            self.sock.close()
