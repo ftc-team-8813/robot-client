@@ -74,7 +74,7 @@ class Connection:
         resp, rdata = resp_packet
         if resp == 0xFE: # LONG response
             npackets = rdata[0]
-            print("Got LONG response (%d packets)" % npackets)
+            # print("Got LONG response (%d packets)" % npackets)
             resp = rdata[1] # overwrite response with actual response
             longdata = b''
             for i in range(npackets):

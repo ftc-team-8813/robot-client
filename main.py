@@ -30,7 +30,7 @@ def main():
             frame = conn.send_recv(0x03, b'')
             if frame is None: return
             time.sleep(0.01)
-        print("Got frame")
+        # print("Got frame")
         frame_data = np.frombuffer(frame, dtype='uint8')
         img = cv2.imdecode(frame_data, cv2.IMREAD_COLOR)
         cv2.imshow('Stream test', img)
