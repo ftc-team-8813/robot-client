@@ -25,17 +25,26 @@ def main():
     print(result)
     # if result.startswith(b'!'): return
     frame = b''
+    frame_data = None
+    frame_n = 0
     while True:
-        while len(frame) == 0:
-            frame = conn.send_recv(0x03, b'')
-            if frame is None: return
-            time.sleep(0.01)
-        # print("Got frame")
-        frame_data = np.frombuffer(frame, dtype='uint8')
-        img = cv2.imdecode(frame_data, cv2.IMREAD_COLOR)
-        cv2.imshow('Stream test', img)
-        cv2.waitKey(5)
-        frame = b''
+        try:
+            while len(frame) == 0:
+                frame = conn.send_recv(0x03, b'')
+                if frame is None: return
+                time.sleep(0.01)
+            # print("Got frame")
+            frame_data = np.frombuffer(frame, dtype='uint8')
+            img = cv2.imdecode(frame_data, cv2.IMREAD_COLOR)
+            cv2.imshow('Stream test', img)
+            cv2.waitKey(5)
+            frame = b''
+        except KeyboardInterrupt:
+            if frame_data is not None:
+                print("Writing frame")
+                with open('frame%d.jpg' % frame_n, 'wb') as of:
+                    of.write(bytes(frame_data))
+                frame_n += 1
 
     # with open('frame.jpg', 'wb') as of:
     #     of.write(frame)
