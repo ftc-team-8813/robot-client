@@ -1,7 +1,7 @@
 from PIL import ImageDraw
 import struct
 
-def draw(img, packet):
+def draw(img, packet, scale=1):
     # draw data sent as a list of opcodes followed by some parameters:
     # 0x00: Arc      <x0=uint16> <y0=uint16> <x1=uint16> <y1=uint16> <start=float> <end=float> <stroke=uint32> <width=uint8>
     # 0x01: Chord    <x0=uint16> <y0=uint16> <x1=uint16> <y1=uint16> <start=float> <end=float> <stroke=uint32> <fill=uint32> <width=uint8>
@@ -31,49 +31,58 @@ def draw(img, packet):
         if cmd == 0x00:
             x0, y0, x1, y1, start, end, stroke, width = struct.unpack('>hhhhffIB', packet[ptr:ptr+0x15])
             ptr += 0x15
-            d.arc((x0, y0, x1, y1), start, end, stroke, width)
+            d.arc((x0*scale, y0*scale, x1*scale, y1*scale), start, end, stroke, width)
         elif cmd == 0x01:
             x0, y0, x1, y1, start, end, stroke, fill, width = struct.unpack('>hhhhffIIB', packet[ptr:ptr+0x19])
             ptr += 0x19
-            d.chord((x0, y0, x1, y1), start, end, fill, stroke, width)
+            d.chord((x0*scale, y0*scale, x1*scale, y1*scale), start, end, fill, stroke, width)
         elif cmd == 0x02:
             x0, y0, x1, y1, stroke, fill, width = struct.unpack('>hhhhIIB', packet[ptr:ptr+0x11])
             ptr += 0x11
-            d.ellipse((x0, y0, x1, y1), fill, stroke, width)
+            d.ellipse((x0*scale, y0*scale, x1*scale, y1*scale), fill, stroke, width)
         elif cmd == 0x03:
             fill, width, join, segment_ct = struct.unpack('>IBBH', packet[ptr:ptr+0x08])
             ptr += 0x08
             segments = []
             for i in range(2 + segment_ct):
-                segments.append(struct.unpack('>hh', packet[ptr:ptr+0x04]))
+                pt = struct.unpack('>hh', packet[ptr:ptr+0x04])
+                pt[0] *= scale
+                pt[1] *= scale
+                segments.append(pt)
                 ptr += 0x04
             joinval = None if join == 0 else "curve"
             d.line(segments, fill, width, joinval)
         elif cmd == 0x04:
             x0, y0, x1, y1, start, end, stroke, fill, width = struct.unpack('>hhhhffIIB', packet[ptr:ptr+0x19])
             ptr += 0x19
-            d.pieslice((x0, y0, x1, y1), start, end, fill, stroke, width)
+            d.pieslice((x0*scale, y0*scale, x1*scale, y1*scale), start, end, fill, stroke, width)
         elif cmd == 0x05:
             x, y, color = struct.unpack('>hhI', packet[ptr:ptr+0x08])
             ptr += 0x08
-            d.point((x, y), color)
+            d.point((x*scale, y*scale), color)
         elif cmd == 0x06:
             fill, stroke, segment_ct = struct.unpack('>IIB', packet[ptr:ptr+0x09])
             ptr += 0x09
             segments = []
             for i in range(2 + segment_ct):
-                segments.append(struct.unpack('>hh', packet[ptr:ptr+0x04]))
+                point = struct.unpack('>hh', packet[ptr:ptr+0x04])
+                ptr += 0x4
+                point[0] *= scale
+                point[1] *= scale
+                segments.append(point)
             d.polygon(segments, fill, stroke)
         elif cmd == 0x07:
             x, y, r, sides, rotation, fill, stroke = struct.unpack('>hhHBfII', packet[ptr:ptr+0x13])
             ptr += 0x13
-            d.regular_polygon((x, y, r), sides, rotation, fill, stroke)
+            d.regular_polygon((x*scale, y*scale, r*scale), sides, rotation, fill, stroke)
         elif cmd == 0x08:
             x0, y0, x1, y1, fill, stroke, width = struct.unpack('>hhhhIIB', packet[ptr:ptr+0x11])
             ptr += 0x11
-            d.regular_polygon((x0, y0, x1, y1), fill, stroke, width)
+            d.rectangle((x0*scale, y0*scale, x1*scale, y1*scale), fill, stroke, width)
         elif cmd == 0x09:
             x, y, textlen = struct.unpack('>hhI', packet[ptr:ptr+0x0C])
+            x *= scale
+            y *= scale
             ptr += 0x0C
             text = packet[ptr:ptr+textlen].decode('utf-8')
             ptr += textlen
