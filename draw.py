@@ -46,8 +46,7 @@ def draw(img, packet, scale=1):
             segments = []
             for i in range(2 + segment_ct):
                 pt = struct.unpack('>hh', packet[ptr:ptr+0x04])
-                pt[0] *= scale
-                pt[1] *= scale
+                pt = (pt[0] * scale, pt[1] * scale)
                 segments.append(pt)
                 ptr += 0x04
             joinval = None if join == 0 else "curve"
@@ -67,8 +66,7 @@ def draw(img, packet, scale=1):
             for i in range(2 + segment_ct):
                 point = struct.unpack('>hh', packet[ptr:ptr+0x04])
                 ptr += 0x4
-                point[0] *= scale
-                point[1] *= scale
+                point = (point[0] * scale, point[1] * scale)
                 segments.append(point)
             d.polygon(segments, fill, stroke)
         elif cmd == 0x07:
