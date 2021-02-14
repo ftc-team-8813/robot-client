@@ -39,6 +39,9 @@ class MainWindow(tk.Frame):
                  ( (10, 0), (7,  3) ),
                  ( (10, 0), (7, -3) ))
         )
+        self.power_plot = widgets.Plot1D(self, 200, 100, 400, -1, 1)
+        self.power_chan_fwd  = self.power_plot.add_channel((0xFF, 0x00, 0x00))
+        self.power_chan_turn = self.power_plot.add_channel((0x00, 0x00, 0xFF))
 
         self.telem_widget = widgets.TelemetryWidget(self, conn, 0x01, (
             "Odometry X ",         # 0
@@ -90,12 +93,16 @@ class MainWindow(tk.Frame):
         self.field_plot.put_sprite(self.sprite_heading, odo_x, odo_y,
                 math.radians(self.telem_widget.values[2]))
 
+        if self.telem_widget.values[14] == 1:
+            self.power_plot.put(self.power_chan_fwd, self.telem_widget.values[12])
+            self.power_plot.put(self.power_chan_turn, self.telem_widget.values[13])
+
         root.after(16, self.update, root)
 
     def start_stop(self, ev):
         pass
 
-    def send_settings(self, unimportant_value):
+    def send_settings(self, val):
 
         pass
 
