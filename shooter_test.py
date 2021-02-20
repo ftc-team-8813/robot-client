@@ -22,7 +22,7 @@ def main():
     conn.connect()
 
     root = tk.Tk()
-    plot = widgets.Plot1D(root, 500, 150, 500, 0, 10)
+    plot = widgets.Plot1D(root, 700, 300, 500, 0, 10)
     plot.grid(column=0, row=0)
     ch0 = plot.add_channel((255, 0, 0))
     ch1 = plot.add_channel((0, 255, 0))
