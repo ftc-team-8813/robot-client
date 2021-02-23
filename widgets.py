@@ -251,6 +251,17 @@ class Plot2D(tk.Frame):
         margin = 3
         return (y - self.ymin) / (self.ymax - self.ymin) * -(self.height - 2*margin) + self.height - margin
 
+    def get_plot_x(self, px):
+        margin = 3
+        return (px - margin) * (self.xmax - self.xmin) / (self.width - 2*margin) + self.xmin
+
+    def get_plot_y(self, py):
+        margin = 3
+        return (py - margin) * (self.ymax - self.ymin) / (self.height - 2*margin) + self.ymin
+
+    def set_click_listener(self, func):
+        self.canvas.bind("<Button 1>", func)
+
     def draw_next_point(self, channel, index=-2):
         pts = self.channels[channel]['points']
         if len(pts) < 2: return

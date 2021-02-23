@@ -21,6 +21,7 @@ class Connection:
 
     def connect(self):
         print("Attempting to connect to %s:%d" % self.address)
+        self.sock = socket.socket()
         self.sock.connect(self.address)
         self.connected = True
 
