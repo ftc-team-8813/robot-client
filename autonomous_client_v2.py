@@ -3,9 +3,13 @@ import math
 import tkinter as tk
 
 import client
+import draw
 import widgets
 
 import struct
+import io
+
+from PIL import Image, ImageTk
 
 class MainWindow(tk.Frame):
     def __init__(self, parent, conn):
@@ -36,7 +40,6 @@ class MainWindow(tk.Frame):
         for i in range(1000):
             self.power_plot.put(power_zero, 0)
 
-
         self.dist_plot = widgets.Plot1D(self, 300, 100, 500, 0, 10)
         self.dist_plot.grid(row=1, column=1)
         self.dist_chan = self.dist_plot.add_channel((0x00, 0x00, 0x00))
@@ -53,16 +56,34 @@ class MainWindow(tk.Frame):
         self.log_widget = widgets.LogWidget(self, self.conn, 0x01, 150, 10)
         self.log_widget.grid(row=3, column=0, columnspan=3)
 
+        self.img_canvas = tk.Canvas(root, width=800, height=448)
+        self.img_canvas.grid(row=0, column=3, rowspan=4)
+        self.canvas_img = self.img_canvas.create_image(0, 0, image=None, anchor='nw')
+        self.frame = None
+
     def update(self, root):
         data_raw = self.conn.send_recv(0x05)
         if data_raw is None: return
         data2_raw = self.conn.send_recv(0x04)
         if data2_raw is None: return
+        frame_raw = self.conn.send_recv(0x02)
+        if frame_raw is None: return
+
         data = struct.unpack('>10f', data_raw)
         if len(data2_raw) == 40:
             data2 = struct.unpack('>5d', data2_raw)
         else:
             data2 = [0] * 5
+
+        if len(frame_raw) > 0:
+            lines_raw = self.conn.send_recv(0x03)
+            if lines_raw is None: return
+
+            img = Image.open(io.BytesIO(frame_raw))
+            draw.draw(img, lines_raw)
+            self.frame = ImageTk.PhotoImage(img)
+            self.img_canvas.itemconfigure(self.canvas_img, image=self.frame)
+
         # 0: Odo X
         # 1: Odo Y
         # 2: Heading

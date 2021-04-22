@@ -42,7 +42,7 @@ class MainWindow(tk.Frame):
         self.btn_conn = tk.Button(self, text='Reconnect', command=self.reconnect)
         self.btn_conn.grid(row=0, column=0, columnspan=3, sticky='EW')
 
-        self.field_plot = widgets.Plot2D(self, 500, 250, -48, 48, -24, 24)
+        self.field_plot = widgets.Plot2D(self, 500, 250, -150, 150, -75, 75)
         self.field_plot.grid(row=1, column=0, rowspan=2)
         self.setup_grids()
         self.odo_channel = self.field_plot.add_channel((0xFF, 0x00, 0x00))
@@ -188,25 +188,29 @@ class MainWindow(tk.Frame):
 
     def setup_grids(self):
         ylines = self.field_plot.add_channel((0xcc, 0xcc, 0xcc))
-        y0 = 75
-        for x in range(-11, 12):
+        y0 = self.field_plot.ymax + 10
+        x_min = math.ceil(self.field_plot.xmin / 6)
+        x_max = math.ceil(self.field_plot.xmax / 6)
+        for x in range(x_min, x_max):
             self.field_plot.put(ylines, x*6, y0)
             y0 = -y0
             self.field_plot.put(ylines, x*6, y0)
 
         xlines = self.field_plot.add_channel((0xcc, 0xcc, 0xcc))
-        x0 = 75
-        for y in range(-11, 12):
+        x0 = self.field_plot.xmax + 10
+        y_min = math.ceil(self.field_plot.ymin / 6)
+        y_max = math.ceil(self.field_plot.ymax / 6)
+        for y in range(y_min, y_max):
             self.field_plot.put(xlines, x0, y*6)
             x0 = -x0
             self.field_plot.put(xlines, x0, y*6)
 
         x_zero_line = self.field_plot.add_channel((0x80, 0x80, 0x80))
-        self.field_plot.put(x_zero_line, -75, 0)
-        self.field_plot.put(x_zero_line,  75, 0)
+        self.field_plot.put(x_zero_line, self.field_plot.xmin - 5, 0)
+        self.field_plot.put(x_zero_line, self.field_plot.xmax + 5, 0)
         y_zero_line = self.field_plot.add_channel((0x80, 0x80, 0x80))
-        self.field_plot.put(y_zero_line, 0, -75)
-        self.field_plot.put(y_zero_line, 0,  75)
+        self.field_plot.put(y_zero_line, 0, self.field_plot.ymin - 5)
+        self.field_plot.put(y_zero_line, 0, self.field_plot.ymax + 5)
 
 if __name__ == '__main__':
     conn = client.Connection('192.168.43.1', 19998)
