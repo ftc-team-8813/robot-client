@@ -1,6 +1,4 @@
-package org.firstinspires.ftc.teamcode.util.websocket;
-
-import com.qualcomm.robotcore.util.RobotLog;
+package server;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +33,7 @@ public class Server
     
     private static final String TAG = "Data Server";
     
-    public ServerTemp(int port)
+    public Server(int port)
     {
         processors = new HashMap<>();
         worker = new SocketWorker(port);
@@ -68,7 +66,7 @@ public class Server
             ServerSocket server = worker.server.get();
             if (server != null && !server.isClosed())
             {
-                RobotLog.ii(TAG, "Closing server");
+                System.out.println("Closing server");
                 server.close();
             }
             if (worker.connection != null)
@@ -76,14 +74,14 @@ public class Server
                 Socket conn = worker.connection.get();
                 if (conn != null && !conn.isClosed())
                 {
-                    RobotLog.ii(TAG, "Closing connection");
+                    System.out.println("Closing connection");
                     conn.close();
                 }
             }
         }
         catch (IOException e)
         {
-            RobotLog.ee(TAG, e, "Unable to close server");
+            System.out.println("Unable to close server");
         }
     }
     
@@ -205,7 +203,7 @@ public class Server
                                 int read = in.read(recvBuffer.array(), 0, payloadSize);
                                 if (read < payloadSize)
                                 {
-                                    RobotLog.ww(TAG, "Connection lost [could not receive full payload]");
+                                    System.out.println("Connection lost [could not receive full payload]");
                                     break;
                                 }
                                 recvBuffer.position(payloadSize);
@@ -228,7 +226,7 @@ public class Server
                                 processor = processors.get(command);
                                 if (processor == null)
                                 {
-                                    RobotLog.ww(TAG, "No processor for command %d; echoing request");
+                                    System.out.println("No processor for command %d; echoing request");
                                     processor = new CmdEcho();
                                 }
                             }
@@ -243,7 +241,7 @@ public class Server
                                 int packetCount = size/65535 + ((size % 65535 > 0) ? 1 : 0);
                                 if (packetCount > 255)
                                 {
-                                    RobotLog.ee(TAG, "Packet size MUCH too large: %d", size);
+                                    System.out.println("Packet size MUCH too large: %d");
                                     packetCount = 0;
                                 }
                                 byte[] resp_packet = {
@@ -287,15 +285,15 @@ public class Server
                     {
                         if (server.isClosed()) // closed from separate thread
                         {
-                            RoboLog.ww(TAG, "Server closed: %s", e.getMessage());
+                            System.out.println("Server closed: %s");
                             break;
                         }
-                        RobotLog.ee(TAG, e, "Connection failed -- listening for new connections");
+                        System.out.println("Connection failed -- listening for new connections");
                     }
                 }
             } catch (IOException e)
             {
-                RobotLog.ee(TAG, e, "Error creating server");
+                System.out.println("Error creating server");
             }
             finally
             {
