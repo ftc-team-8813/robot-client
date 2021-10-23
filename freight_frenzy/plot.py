@@ -1,36 +1,34 @@
 import struct
 from typing import List
 from matplotlib import pyplot, animation
-import numpy as np
-from client.client import Connection
 
 
 class Plot:
-    def __init__(self, conn: Connection, labels: dict, y_range: tuple) -> None:
+    def __init__(self, conn, labels: dict, y_range: tuple) -> None:
         self.conn = conn
         self.conn.connect()
-        self.size = 5000 # Adjusts width of number change
+        self.fig, self.ax = pyplot.subplots()
+        self.ax.set_ylim(y_range[0], y_range[1])
+        self.size = abs(y_range[0]) + y_range[1]
         self.num_lines = len(labels)
         self.labels = labels
         self.line_ranges = []
         self.lines = []
         self.paused = False
-        self.fig, self.ax = pyplot.subplots()
-        self.ax.set_ylim(y_range[0], y_range[1])
     
     def generate_lines(self):
-        x = np.arange(0, self.size/10, 0.01)
+        x = [i for i in range(self.size)]
         for line_num in range(self.num_lines):
             self.line_ranges.append([0 for i in range(self.size)])
             line = self.line_ranges[line_num]
             label = list(self.labels.keys())[line_num]
             color = list(self.labels.values())[line_num][0]
-            self.lines.append(self.ax.plot(line, label=label, color=color))
+            self.lines.append(self.ax.plot(x, line, label=label, color=color))
 
     def animate(self, frame):
         nums = self.grab_data(0x1, str(self.num_lines))
         for line_num in range(self.num_lines):
-            for i in range(100):
+            for i in range(int(0.01 * self.size)):
                 self.line_ranges[line_num].pop(0)
                 scalar = list(self.labels.values())[line_num][1]
                 self.line_ranges[line_num].append(nums[line_num] * scalar)

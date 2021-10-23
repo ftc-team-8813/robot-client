@@ -1,4 +1,3 @@
-package server;
 import java.nio.ByteBuffer;
 
 public class TestServer{
@@ -7,8 +6,13 @@ public class TestServer{
     private static double g = 0.0;
     private static double h = 0.0;
 
+    private static double x = 0.0;
+    private static double y = 0.0;
+    private static double heading = 0.0;
+
     public static void main(String[] args) throws InterruptedException{
         Server server = new Server(18888);
+
         server.registerProcessor(0x1, (cmd, payload, resp) -> {
             ByteBuffer buf = ByteBuffer.allocate(100);
             buf.putDouble(j);
@@ -19,7 +23,25 @@ public class TestServer{
 
             resp.respond(buf);
         });
+        server.registerProcessor(0x2, (cmd, payload, resp) -> {
+            ByteBuffer buf = ByteBuffer.allocate(300);
+            buf.putDouble(x);
+            buf.putDouble(y);
+            buf.putDouble(heading);
+
+            buf.flip();
+            resp.respond(buf);
+        });
         server.startServer();
+
+        for (int i = 0; i < 100; i++){
+            x += 1;
+            Thread.sleep(200);
+        }
+        for (int i = 0; i < 100; i++){
+            y += 1;
+            Thread.sleep(200);
+        }
 
         for(int i = 0; i < 50; i++){
             j += 50;
