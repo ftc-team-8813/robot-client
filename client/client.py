@@ -1,5 +1,4 @@
 import socket
-import struct
 
 def create_packet(cmd, data):
     if len(data) > 65535:

@@ -5,6 +5,7 @@ public class TestServer{
     private static double j = 0.0;
     private static double f = 0.0;
     private static double g = 0.0;
+    private static double h = 0.0;
 
     public static void main(String[] args) throws InterruptedException{
         Server server = new Server(18888);
@@ -13,6 +14,7 @@ public class TestServer{
             buf.putDouble(j);
             buf.putDouble(f);
             buf.putDouble(g);
+            buf.putDouble(h);
             buf.flip();
 
             resp.respond(buf);
@@ -29,6 +31,10 @@ public class TestServer{
         }
         for(int i = 0; i < 50; i++){
             g -= 50;
+            Thread.sleep(200);
+        }
+        for(int i = 0; i < 50; i++){
+            h -= 100;
             Thread.sleep(200);
         }
     }
