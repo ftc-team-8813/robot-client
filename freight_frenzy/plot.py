@@ -47,6 +47,7 @@ class Plot:
             print('Empty')
             pass
         nums = struct.unpack('>' + bytes + 'd', data_raw)
+        print(nums)
         return nums
     
     def change_state(self, *args, **kwargs):

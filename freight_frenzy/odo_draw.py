@@ -1,6 +1,8 @@
+import math
 import struct
 import turtle
 from time import sleep
+from math import pi
 
 
 class OdoDraw:
@@ -13,8 +15,14 @@ class OdoDraw:
         scale_factor = 2
         while 1:
             x, y, heading = self.grab_data(0x2, '3')
-            print(x, y, heading)
-            turtle.setposition(x * scale_factor, y * scale_factor)
+            heading = heading * (180/pi) + 90 # Convert to degrees and adjust by 90 for turtle
+            print(
+                'X: ' + str(x),
+                'Y: ' + str(y),
+                'Heading (Degrees): ' + str(heading),
+                
+            )
+            turtle.setposition(y * scale_factor, x * scale_factor) # Flipped X and Y because coordinated system is offset in SDK
             turtle.setheading(heading)
             sleep(0.01)
     
