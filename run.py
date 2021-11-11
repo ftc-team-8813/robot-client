@@ -21,16 +21,23 @@ def plotter():
 
     # Label related to color and scale factor on graph
     labels = {
-        'Arm Pos': ['green', 1.0],
-        'P Term': ['blue', 1000.0],
-        'I Term': ['red', 1000.0],
-        'D Term': ['purple', 1000.0],
-        'L Enc': ['yellow', 1.0],
-        'R Enc': ['black', 1.0],
-        'S Enc': ['teal', 1.0],
+        'Lift Pos': ['black', 0],
+        'Lift Power': ['orange', 0],
+
+        'P Term': ['red', 0],
+        'I Term': ['green', 0],
+        'D Term': ['blue', 0],
+
+        'L Enc': ['red', 0],
+        'R Enc': ['green', 0],
+        'S Enc': ['blue', 0],
+
+        'X': ['red', 1],
+        'Y': ['green', 1],
+        'Heading': ['blue', 1],
     }
 
-    plot = Plot(conn, labels, (-5000, 5000))
+    plot = Plot(conn, labels, (-50, 50))
     plot.generate_lines() # Creates x and y arrays for line axises
     plot.update_lines() # Updates y arrays with incoming server data
 

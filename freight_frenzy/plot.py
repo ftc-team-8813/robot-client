@@ -47,7 +47,12 @@ class Plot:
             print('Empty')
             pass
         nums = struct.unpack('>' + bytes + 'd', data_raw)
-        print(nums)
+        for index, num in enumerate(nums):
+            if num == 0:
+                continue
+            label = tuple(self.labels.keys())[index]
+            print(label + ': ' + str(num), end='   ')
+        print()
         return nums
     
     def change_state(self, *args, **kwargs):
