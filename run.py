@@ -1,6 +1,16 @@
 from client import Connection
 from freight_frenzy.plot import Plot
 from freight_frenzy.odo_draw import OdoDraw
+from freight_frenzy.captsone_detector import CapstoneDetector
+
+
+def capstone_detector():
+    directory = 'freight_frenzy/test_imgs/'
+    filename = 'vision_img.png'
+
+    detector = CapstoneDetector(directory + filename)
+    detector.image_prep()
+    detector.find_contours()
 
 
 def odo_drawer():
@@ -11,7 +21,6 @@ def odo_drawer():
 
     odo_draw = OdoDraw(conn)
     odo_draw.draw()
-    
 
 def plotter():
     localhost = '127.0.0.1' # Used for TestServer.java
@@ -32,15 +41,20 @@ def plotter():
         'R Enc': ['green', 0],
         'S Enc': ['blue', 0],
 
-        'X': ['red', 1],
-        'Y': ['green', 1],
-        'Heading': ['blue', 1],
+        'X': ['red', 0],
+        'Y': ['green', 0],
+        'Heading': ['blue', 0],
+
+        'Delta Y': ['red', 1],
+        'Delta X': ['green', 1],
+        'Delta Heading': ['blue', 1],
     }
 
-    plot = Plot(conn, labels, (-50, 50))
+    plot = Plot(conn, labels, (-1, 1))
     plot.generate_lines() # Creates x and y arrays for line axises
     plot.update_lines() # Updates y arrays with incoming server data
 
 if __name__ == '__main__':
-    plotter()
+    capstone_detector()
+    # plotter()
     # odo_drawer()

@@ -14,22 +14,27 @@ class OdoDraw:
     def draw(self) -> None:
         scale_factor = 2
         while 1:
-            x, y, heading = self.grab_data(0x2, '3')
-            heading = heading * (180/pi) + 90 # Convert to degrees and adjust by 90 for turtle
+            y, x, heading = self.grab_data(0x2, '3')
             print(
-                'X: ' + str(x),
                 'Y: ' + str(y),
+                'X: ' + str(x),
                 'Heading (Degrees): ' + str(heading),
                 
             )
-            turtle.setposition(y * scale_factor, x * scale_factor) # Flipped X and Y because coordinated system is offset in SDK
-            turtle.setheading(heading)
+            turtle.setposition(-y * scale_factor, x * scale_factor) # Flipped X and Y because coordinated system is offset in SDK
+            turtle.setheading(heading + 90)
             sleep(0.01)
     
     def grab_data(self, command, bytes):
         data_raw = self.conn.send_recv(command)
+
         if data_raw is None:
             print('Empty')
             pass
-        nums = struct.unpack('>' + bytes + 'd', data_raw)
+
+        try:
+            nums = struct.unpack('>' + bytes + 'd', data_raw)
+        except TypeError:
+            nums = [0, 0, 0]
+
         return nums

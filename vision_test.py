@@ -1,6 +1,7 @@
 import tkinter as tk
 import numpy as np
 from PIL import Image, ImageTk
+from time import sleep
 
 import client
 import draw
@@ -12,6 +13,7 @@ import io
 img_ref = None
 
 def update(conn, root, canvas, img_id, textvar):
+    sleep(2)
     global img_ref
     frame = b''
     while len(frame) == 0:
@@ -20,6 +22,8 @@ def update(conn, root, canvas, img_id, textvar):
         time.sleep(0.01)
     # print("-> Recv frame: %d bytes" % len(frame))
     img = Image.open(io.BytesIO(frame))
+    # img.save("vision_img.png", "JPEG")
+    # sys.exit('Saved Image')
     draw_data = conn.send_recv(0x02)
     if draw_data is None: sys.exit(1)
     draw.draw(img, draw_data)
@@ -29,7 +33,7 @@ def update(conn, root, canvas, img_id, textvar):
     telem_data = conn.send_recv(0x03)
     if telem_data is None: sys.exit(1)
     telem = np.frombuffer(telem_data, dtype='>f8')
-    textvar.set('Contour area: %.3f' % telem[0])
+    # textvar.set('Contour area: %.3f' % telem[0])
 
     print("-> Data: %d bytes frame, %d bytes draw, %d bytes telemetry" % (len(frame), len(draw_data), len(telem_data)))
 
