@@ -36,18 +36,6 @@ def plotter():
         'P Term': ['red', 0],
         'I Term': ['green', 0],
         'D Term': ['blue', 0],
-
-        'L Enc': ['red', 0],
-        'R Enc': ['green', 0],
-        'S Enc': ['blue', 0],
-
-        'X': ['red', 0],
-        'Y': ['green', 0],
-        'Heading': ['blue', 0],
-
-        'Delta Y': ['red', 1],
-        'Delta X': ['green', 1],
-        'Delta Heading': ['blue', 1],
     }
 
     plot = Plot(conn, labels, (-1, 1))

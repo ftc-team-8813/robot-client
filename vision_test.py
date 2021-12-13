@@ -13,7 +13,6 @@ import io
 img_ref = None
 
 def update(conn, root, canvas, img_id, textvar):
-    sleep(2)
     global img_ref
     frame = b''
     while len(frame) == 0:
