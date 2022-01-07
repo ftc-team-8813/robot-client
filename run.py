@@ -5,12 +5,13 @@ from freight_frenzy.captsone_detector import CapstoneDetector
 
 
 def capstone_detector():
-    directory = 'freight_frenzy/test_imgs/'
-    filename = 'vision_img.png'
+    directory = './freight_frenzy/test_imgs/'
+    filename = 'competition2.jpg'
 
     detector = CapstoneDetector(directory + filename)
     detector.image_prep()
-    detector.find_contours()
+    detector.masked()
+    # detector.find_color_ranges()
 
 
 def odo_drawer():
